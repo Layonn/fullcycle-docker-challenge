@@ -1,12 +1,16 @@
-FROM golang:1.21.0-alpine3.18
+FROM golang:alpine AS builder
 
 WORKDIR /app
 
 COPY main.go /app
 
-RUN echo running...
-
 RUN go mod init main \
     && go build main.go
 
-ENTRYPOINT [ "./main" ]
+FROM scratch
+
+WORKDIR /app
+
+COPY --from=builder /app /app
+
+ENTRYPOINT ["./main"]
